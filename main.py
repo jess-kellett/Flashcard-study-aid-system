@@ -3,6 +3,14 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+class CardIn(BaseModel):
+    topic: str
+    question: str
+    answer: str
+
+class Card(CardIn):
+    id: int
+
 @app.get("/")
 def home():
     return {"message": "Study API is running"}
@@ -22,24 +30,19 @@ cards = {
     }
 }
 
-@app.get("/cards/{card_id}")
+@app.get("/cards/{card_id}", response_model=Card)
 def get_cards(card_id:int):
     if card_id not in cards:
         raise HTTPException(status_code = 404, detail="Card not found")
     return cards[card_id]
 
-class CardIn(BaseModel):
-    topic: str
-    question: str
-    answer: str
-
-@app.post("/cards", status_code=201)
+@app.post("/cards", status_code=201, response_model=Card)
 def create_card(card: CardIn):
     new_id = max(cards, default=0) + 1
     cards[new_id] = {"id": new_id, **card.model_dump()}
     return cards[new_id]
 
-@app.put("/cards/{card_id}")
+@app.put("/cards/{card_id}", response_model=Card)
 def update_card(card_id: int, card: CardIn):
     if card_id not in cards:
         raise HTTPException(status_code=404, detail="Card not found")
@@ -52,7 +55,7 @@ def delete_card(card_id: int):
         raise HTTPException(status_code=404, detail="Card not found")
     del cards[card_id]
 
-@app.get("/cards")
+@app.get("/cards", response_model=list[Card])
 def list_cards(topic: str | None = None):
     result = list(cards.values())
     if topic:
@@ -65,9 +68,10 @@ class CardPatch(BaseModel):
     question: str | None = None
     answer: str | None = None
 
-@app.patch("/cards/{card_id}")
+@app.patch("/cards/{card_id}", response_model=Card)
 def patch_card(card_id: int, card: CardPatch):
     if card_id not in cards:
         raise HTTPException(status_code=404, detail="Card not found")
     cards[card_id].update(card.model_dump(exclude_unset=True))
     return cards[card_id]
+
