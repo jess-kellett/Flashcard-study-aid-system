@@ -1,6 +1,7 @@
 import sqlite3
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 DB_PATH = "cards.db"
@@ -43,6 +44,10 @@ def get_or_404(conn: sqlite3.Connection, card_id: int) -> dict:
     if row is None:
         raise HTTPException(status_code=404, detail="Card not found")
     return dict(row)
+
+@app.get("/", include_in_schema=False)
+def root():
+    return RedirectResponse(url="/docs")
 
 @app.post("/cards", status_code=201, response_model=Card)
 def create_card(card: CardIn):

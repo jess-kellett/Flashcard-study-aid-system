@@ -106,7 +106,7 @@ This project uses [uv](https://docs.astral.sh/uv/) to manage Python and dependen
    uv run uvicorn main:app --reload
    ```
    The API runs at `http://127.0.0.1:8000`.
-3. Open `http://127.0.0.1:8000/docs` in a browser to see and try every endpoint. Use **POST /cards** to add your first cards.
+3. Open `http://127.0.0.1:8000/docs` in a browser to see and try every endpoint. Use **POST /cards** to add your first cards. Opening http://127.0.0.1:8000/ also redirects here.
 4. In a **second terminal**, with the server still running, start the quiz:
    ```
    uv run quiz.py
